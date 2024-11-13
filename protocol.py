@@ -21,3 +21,5 @@ def recv(s):
         msg = s.recv(msglen).decode(FORMAT)
         return msg
     return "failed"
+
+    #free duruv
