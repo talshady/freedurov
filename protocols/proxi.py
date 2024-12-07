@@ -1,4 +1,4 @@
-from protocol import *
+from protocols.protocol import *
 
 port = 5050
 proxyip = str(socket.gethostbyname(socket.gethostname()))
@@ -12,6 +12,7 @@ spsocket.connect((proxyip, 1000))
 
 
 def handleCLient(conn):
+        
     while True:
         msg = recv(conn)
         send(spsocket, msg)

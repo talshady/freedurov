@@ -1,4 +1,4 @@
-from protocol import *
+from protocols.protocol import *
 
 port = 1000
 ip = str(socket.gethostbyname(socket.gethostname()))
