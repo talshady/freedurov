@@ -1,4 +1,4 @@
-from protocol import *
+from protocols.protocol import *
 
 server = socket.gethostbyname(socket.gethostname())
 port = 5050
