@@ -1,23 +1,11 @@
-import dbManager
+import dbmanger
 
+c = dbmanger.conversation(1,2)
 
-#messages are stored in conversations
+def RequestConvversation():
+    messages = c.requestMessages(5)
 
-#create a new conversation
+def sendMessage(msg):
+    c.writeMessage(msg,5)
 
-
-messageidCounter = 0
-#requests
-def sendMessage(text, user):
-    global messageidCounter
-    messageidCounter += 1
-    dbManager.writeMessage(dbManager.message(messageidCounter,
-                                             text,user,5))
-
-
-
-
-
-def requestMessages(user2):
-    for i in range(6):
-        print(dbManager.getMessage(i + 1))
+#dbmanger.writeMessage('test', 5)
