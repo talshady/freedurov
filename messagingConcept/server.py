@@ -1,11 +1,9 @@
-import dbmanger
+from dbmanager import databaseManager
 
-c = dbmanger.conversation(1,2)
-
-def RequestConvversation():
-    messages = c.requestMessages(5)
-
-def sendMessage(msg):
-    c.writeMessage(msg,5)
-
-#dbmanger.writeMessage('test', 5)
+uID1 = 12343
+uID2 = 1233
+conversationsdb = databaseManager()
+conversationsdb.openConversation(uID1, uID2)
+conversationsdb.requestMessages(2,1)
+#conversationsdb.requestMessages(6,0)
+#conversationsdb.closeConversation()
