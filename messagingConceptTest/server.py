@@ -15,9 +15,6 @@ def sendMessage(text, user):
                                              text,user,5))
 
 
-
-
-
 def requestMessages(user2):
     for i in range(6):
         print(dbManager.getMessage(i + 1))

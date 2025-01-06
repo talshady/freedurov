@@ -1,17 +1,17 @@
 import sqlite3
 import json
 
-
-
-
-
 class conversation():
     cID: int
+    uid1: int
+    uid2: int
     def __init__(self, uID1, uID2, cursor: sqlite3.Cursor):
         if uID1 < uID2:
             temp = uID2
             uID2 = uID1
             uID1 = temp
+        self.uid1 = uID1
+        self.uid2 = uID2
         self.cursor = cursor
         self.cursor.execute('SELECT rowid FROM conversations WHERE uID1 = ' + str(uID1) + ' AND uID2 = ' + str(uID2))
         rid =self.cursor.fetchone()
@@ -29,11 +29,31 @@ class conversation():
         print(self.cID)
         self.cursor.execute(f'INSERT INTO messages (msg, uID) VALUES({msg}, {uid})')
         last_msg_id = self.cursor.lastrowid
-        self.cursor.execute(f'SELECT msgs FROM conversations WHERE id = { self.cID }')
+        self.cursor.execute(f'SELECT msgs FROM conversations WHERE id = {self.cID}')
         msgs = self.cursor.fetchone()[0]
-        msgs += ',' + str(last_msg_id)
+        if not msgs:
+            msgs = ',' + str(last_msg_id)
+        else:
+            msgs += ',' + str(last_msg_id)
         self.cursor.execute("UPDATE conversations SET msgs = ? WHERE id = ?", ( msgs, self.cID ))
-
+        
+        #add message to unread messages by the other user
+        recipientid = self.uid1 if uid == self.uid1 else self.uid2
+        self.cursor.execute(f"SELECT id FROM unreadMessages WHERE uID = {recipientid}")
+        rid = self.cursor.fetchone()
+        if not rid:
+            self.cursor.execute(f"INSERT INTO unreadMessages (msgs, uID) VALUES('NULL', {recipientid})")
+            rid = self.cursor.lastrowid
+        else:
+            rid = rid[0]
+        #db.coomit
+        self.cursor.execute(f'SELECT msgs FROM unreadMessages WHERE id = {rid}')
+        msgs = self.cursor.fetchone()[0]
+        if msgs:
+            msgs = ',' + str(last_msg_id)
+        else:
+            msgs += ',' + str(last_msg_id)
+        self.cursor.execute('UPDATE unreadMessages set msgs = ? where id = ?',(msgs, rid))
 
 
     def requestMessages(self, amn, i):
@@ -58,18 +78,25 @@ class databaseManager:
         self.db = sqlite3.connect('messages.db')
         self.cursor = self.db.cursor()
         # Convs table create
-        commnad = '''CREATE TABLE IF NOT EXISTS conversations
+        command = '''CREATE TABLE IF NOT EXISTS conversations
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     msgs TEXT, uID1 INTEGER, uID2 INTEGER)
         '''
-        self.cursor.execute(commnad)
+        self.cursor.execute(command)
 
         # Msg table create
-        commnad = '''CREATE TABLE IF NOT EXISTS messages
+        command = '''CREATE TABLE IF NOT EXISTS messages
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     msg TEXT, uID INTEGER)
         '''
-        self.cursor.execute(commnad)
+        self.cursor.execute(command)
+
+        command = '''CREATE TABLE IF NOT EXISTS unreadMessages
+                    (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    msgs text, uID INTEGER)
+        '''
+        self.cursor.execute(command)
+        
         self.db.commit()
     
     def openConversation(self, uID1, uID2):
