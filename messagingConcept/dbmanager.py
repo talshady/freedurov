@@ -1,6 +1,12 @@
 import sqlite3
 import json
 
+#c++>
+class dbtypes:
+    id = 'INTEGER PRIMARY KEY AUTOINCREMENT'
+    str = 'TEXT'
+    int = 'INTEGER'
+
 class conversation():
     cID: int
     uid1: int
@@ -71,7 +77,9 @@ class conversation():
 
 
 
-class databaseManager:
+
+
+class databaseManager2:
     db: sqlite3.connect
     cursor: sqlite3.Cursor
     def __init__(self):
@@ -109,3 +117,61 @@ class databaseManager:
 
     def requestMessages(self, amn, i):
         self.cconversation.requestMessages(amn, i)
+
+
+class databaseManager:
+    db: sqlite3.connect
+    cursor: sqlite3.Cursor
+    dbname: str
+    tname:str
+    names = []
+    def __init__(self, dbname ,tname, names, types):
+        createCommand = "CREATE TABLE IF NOT EXISTS " + tname + '('
+        for i in range(len(names)):
+            createCommand += names[i] + ' ' + types[i] + ','
+        print(createCommand)
+        createCommand = createCommand[:-1] + ')'
+        print(createCommand)
+        self.db = sqlite3.connect(dbname + '.db')
+        self.cursor = self.db.cursor()
+        self.cursor.execute(createCommand)
+        self.db.commit()
+
+        self.names = names
+        self.dbname = dbname
+        self.tname = tname
+
+    def getIdByName(self, column, val):
+        command = 'SELECT '+ self.names[0] + ' FROM ' + self.tname + ' WHERE ' + column + ' = ' + val
+        self.cursor.execute()
+
+        
+    def search(id):
+        pass#dont need yet
+    def insert(self, vals):
+        command = 'INSERT INTO ' + self.tname + ' VALUES (NULL,'
+        for v in vals:
+            command += v + ','
+        command = command[:-1] + ')'
+        print(command)
+        self.cursor.execute(command)
+        self.db.commit()
+    def handleList():
+        #get the list
+        pass
+
+class users(databaseManager):
+    def __init__(self):
+        super().__init__('users', 'users', ['UID','username','password'],
+                          [dbtypes.id, dbtypes.str, dbtypes.str])
+        self.insert(['"t"','"test1"'])
+
+#lc = latest conversations/channels/chats
+class LCdbManager(databaseManager):
+    def __init__(self):
+        super().__init__('latestChats', 'lc', ['LID','UID','Conversations'], [dbtypes.id, dbtypes.int, dbtypes.str])
+    
+    
+a = users()
+    
+    

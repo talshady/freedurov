@@ -20,7 +20,10 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(addr)
 
 sessionKey = protocol.cliHandShake(client)
-protocol.send(client, 0, 'test', sessionKey)
+protocol.send(client, 1, '', sessionKey)
+protocol.recv(client, sessionKey)#recv the captcha
+#get input
+protocol.send(requestVerifyCaptcha, 'given input', sessionKey)#
 #protocol.send(client, IMGMSG, 'test', protocol.enc, path='CAPTCHA.png')
 
 #r,a = protocol.recv(client, protocol.dec)
